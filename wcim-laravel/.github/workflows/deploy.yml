@@ -37,7 +37,7 @@ jobs:
         run: npm run build
 
       - name: Bundle NativePHP app
-        run: php artisan native:bundle
+        run: php artisan native:build
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4

@@ -32,7 +32,7 @@
    composer run bundle
    ```
 
-   This runs `npm run build` then `php artisan native:bundle`, producing the installer in `dist/`. Install the `.exe` on a test machine to verify everything works before pushing the tag.
+   This runs `npm run build` then `php artisan native:build`, producing the installer in `dist/`. Install the `.exe` on a test machine to verify everything works before pushing the tag.
 
 5. **CI builds the release**
 
@@ -40,7 +40,7 @@
 
    - Run on `windows-latest`
    - Install dependencies
-   - Run `php artisan native:bundle` to produce the NSIS installer
+   - Run `php artisan native:build` to produce the NSIS installer
    - Create a **draft** GitHub Release with the `.exe` attached
 
 6. **Test the draft release**
