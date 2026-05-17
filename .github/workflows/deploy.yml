@@ -34,7 +34,7 @@ jobs:
         run: copy .env.example .env
 
       - name: Create SQLite database
-        run: type nul > database/database.sqlite
+        run: New-Item -ItemType File -Path "database/database.sqlite" -Force
 
       - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader
