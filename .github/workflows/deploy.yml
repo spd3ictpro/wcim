@@ -30,6 +30,12 @@ jobs:
         with:
           node-version: 20
 
+      - name: Create .env file
+        run: copy .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
       - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader
 
