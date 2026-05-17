@@ -37,7 +37,7 @@ jobs:
         run: New-Item -ItemType File -Path "database/database.sqlite" -Force
 
       - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-fileinfo
+        run: composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
       - name: Generate app key
         run: php artisan key:generate --force
