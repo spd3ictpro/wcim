@@ -221,6 +221,17 @@ class InventoryController extends Controller
         return redirect()->back()->with('success', 'Product deleted.');
     }
 
+    public function deleteImage(Product $product)
+    {
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+        $product->image = null;
+        $product->save();
+
+        return response()->json(['success' => true]);
+    }
+
     public function history(Product $product)
     {
         $logs = $product->usageLogs()->latest()->get();

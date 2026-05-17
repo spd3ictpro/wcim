@@ -77,8 +77,6 @@
                 @else
                 <button @click="loadIndentPreview(); showIndentModal = true" class="bg-[#004b87] hover:bg-[#003461] text-white font-semibold py-2 px-4 rounded text-sm transition">📄 Generate Indent</button>
                 @endif
-                <a href="{{ route('analytics.index') }}" class="bg-white border border-blue-300 hover:bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded text-sm transition">📊 Analytics</a>
-                <a href="{{ route('backup.index') }}" class="bg-white border border-blue-300 hover:bg-blue-50 text-blue-700 font-semibold py-2 px-4 rounded text-sm transition">💾 Backup</a>
             </div>
         </div>
 
@@ -305,9 +303,10 @@
                     </div>
                     <div class="col-span-2">
                         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Product Image</label>
-                        <template x-if="editProduct.image_url">
-                            <img :src="editProduct.image_url" class="h-20 w-20 object-cover rounded border mb-2">
-                        </template>
+                        <div x-show="editProduct.image_url" class="flex items-start gap-3 mb-2">
+                            <img :src="editProduct.image_url" class="h-20 w-20 object-cover rounded border">
+                            <button type="button" @click="removeImage(editProduct.id)" class="text-xs px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded font-semibold transition">🗑️ Remove</button>
+                        </div>
                         <input type="file" name="image" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" class="w-full border rounded px-2 py-1.5 text-sm">
                     </div>
                 </div>
@@ -432,6 +431,23 @@ function inventoryApp() {
                     this.editFormAction = `/products/${productId}/update-details`;
                     this.showEditModal = true;
                 });
+        },
+
+        removeImage(productId) {
+            if (!confirm('Remove this image?')) return;
+            fetch(`/products/${productId}/image`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    this.editProduct.image_url = null;
+                }
+            });
         },
 
         toggleInputMode(productId, newMode, stockValue) {

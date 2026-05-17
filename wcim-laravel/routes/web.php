@@ -6,6 +6,7 @@ use App\Http\Controllers\IndentController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\ImportController;
 
 Route::get('/', [InventoryController::class, 'index'])->name('dashboard');
 Route::get('/products/{product}', [InventoryController::class, 'show'])->name('products.show');
@@ -30,6 +31,12 @@ Route::get('/analytics/{indent}/pdf', [AnalyticsController::class, 'regeneratePd
 
 Route::get('/stock/receive', [StockController::class, 'index'])->name('stock.receive');
 Route::post('/stock/receive', [StockController::class, 'store'])->name('stock.receive.store');
+
+Route::get('/import', [ImportController::class, 'index'])->name('import.index');
+Route::post('/import', [ImportController::class, 'store'])->name('import.store');
+Route::get('/import/sample', [ImportController::class, 'sample'])->name('import.sample');
+
+Route::delete('/products/{product}/image', [InventoryController::class, 'deleteImage'])->name('products.image.destroy');
 
 Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
 Route::post('/backup/authenticate', [BackupController::class, 'authenticate'])->name('backup.authenticate');

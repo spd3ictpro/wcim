@@ -64,10 +64,24 @@
                 <span>📦</span> Receive Stock
             </a>
 
-            <a href="{{ route('backup.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('backup.*') ? 'bg-[#004b87] text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-[#004b87]' }}">
-                <span>💾</span> Backup
-            </a>
+            {{-- Maintenance with sub-items --}}
+            <div x-data="{ open: {{ request()->routeIs('import.*') || request()->routeIs('backup.*') ? 'true' : 'false' }} }">
+                <button @click="open = !open"
+                   class="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-sm font-medium transition {{ request()->routeIs('import.*') || request()->routeIs('backup.*') ? 'bg-[#004b87] text-white' : 'text-gray-600 hover:bg-blue-50 hover:text-[#004b87]' }}">
+                    <span class="flex items-center gap-3"><span>⚙️</span> Maintenance</span>
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <div x-show="open" x-cloak class="ml-6 mt-1 space-y-1">
+                    <a href="{{ route('import.index') }}"
+                       class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition {{ request()->routeIs('import.*') ? 'bg-blue-100 text-[#004b87]' : 'text-gray-500 hover:text-[#004b87]' }}">
+                        <span class="text-[10px]">└─</span> Import CSV
+                    </a>
+                    <a href="{{ route('backup.index') }}"
+                       class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition {{ request()->routeIs('backup.*') ? 'bg-blue-100 text-[#004b87]' : 'text-gray-500 hover:text-[#004b87]' }}">
+                        <span class="text-[10px]">└─</span> Backup
+                    </a>
+                </div>
+            </div>
         </nav>
 
         {{-- Footer --}}
