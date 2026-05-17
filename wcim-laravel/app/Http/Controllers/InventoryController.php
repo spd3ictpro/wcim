@@ -44,11 +44,17 @@ class InventoryController extends Controller
             'default_input_mode' => Product::value('input_mode') ?? 'unit',
         ];
 
-        $currentMonthIndent = Indent::whereMonth('indent_date', now()->month)
-            ->whereYear('indent_date', now()->year)
+        $monthOffset = (int) $request->input('month', 0);
+        $targetDate = now()->subMonths($monthOffset);
+
+        $currentMonthIndent = Indent::whereMonth('indent_date', $targetDate->month)
+            ->whereYear('indent_date', $targetDate->year)
             ->first();
 
-        return view('dashboard', compact('products', 'categories', 'stats', 'currentMonthIndent'));
+        $monthLabel = $targetDate->format('F Y');
+        $prevMonthLabel = now()->subMonth()->format('F Y');
+
+        return view('dashboard', compact('products', 'categories', 'stats', 'currentMonthIndent', 'monthOffset', 'monthLabel', 'prevMonthLabel'));
     }
 
     public function show(Product $product)

@@ -10,41 +10,82 @@
         @endif
 
         {{-- Monthly Indent Status Banner --}}
-        @php $monthLabel = now()->format('F Y'); @endphp
-        @if($currentMonthIndent)
-        <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-5 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <span class="text-lg">✅</span>
-                <div>
-                    <p class="font-semibold text-sm">{{ $monthLabel }} — Submitted on {{ \Carbon\Carbon::parse($currentMonthIndent->indent_date)->format('d F Y') }}</p>
+        <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-5 py-3 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+                <span class="text-lg shrink-0">{{ $currentMonthIndent ? '✅' : '📋' }}</span>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <div class="flex rounded overflow-hidden border border-blue-300 shrink-0 shadow-sm">
+                            <a href="{{ route('dashboard', ['month' => 1] + request()->except('month')) }}"
+                               class="text-sm px-4 py-1.5 font-semibold transition {{ $monthOffset == 1 ? 'bg-[#004b87] text-white shadow-sm' : 'bg-white text-blue-700 hover:bg-blue-50' }}">
+                               {{ $prevMonthLabel }}
+                            </a>
+                            <a href="{{ route('dashboard', request()->except('month')) }}"
+                               class="text-sm px-4 py-1.5 font-semibold transition {{ $monthOffset == 0 ? 'bg-[#004b87] text-white shadow-sm' : 'bg-white text-blue-700 hover:bg-blue-50' }}">
+                               {{ $monthLabel }}
+                            </a>
+                        </div>
+                        @if($currentMonthIndent)
+                        <p class="font-semibold text-sm truncate">— Submitted on {{ \Carbon\Carbon::parse($currentMonthIndent->indent_date)->format('d F Y') }}</p>
+                        @else
+                        <p class="font-semibold text-sm truncate">— Indent Open</p>
+                        @endif
+                    </div>
+                    @if($currentMonthIndent)
                     <p class="text-xs text-blue-600">{{ $currentMonthIndent->total_items }} item(s) ordered. <a href="{{ route('analytics.show', $currentMonthIndent) }}" class="underline">View in Analytics</a></p>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <a href="{{ route('analytics.pdf', $currentMonthIndent) }}" class="bg-[#004b87] hover:bg-[#003461] text-white text-xs font-semibold px-3 py-1.5 rounded transition">📄 Re-download PDF</a>
-            </div>
-        </div>
-        @else
-        <div class="mb-4 bg-green-50 border border-green-200 text-green-800 rounded-lg px-5 py-3">
-            <div class="flex items-center gap-3">
-                <span class="text-lg">📋</span>
-                <div>
-                    <p class="font-semibold text-sm">{{ $monthLabel }} — Indent Open</p>
+                    @else
                     <p class="text-xs text-green-600">{{ $stats['needs_order'] }} item(s) need ordering.</p>
+                    @endif
                 </div>
             </div>
+            @if($currentMonthIndent)
+            <div class="flex gap-2 shrink-0">
+                <a href="{{ route('analytics.pdf', $currentMonthIndent) }}" class="bg-[#004b87] hover:bg-[#003461] text-white text-xs font-semibold px-3 py-1.5 rounded transition whitespace-nowrap">📄 Re-download PDF</a>
+            </div>
+            @endif
         </div>
-        @endif
 
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white rounded-lg shadow p-4 border-t-4 border-slate-600">
-                <h3 class="text-xs font-semibold text-gray-500 uppercase">Total SKU Items</h3>
-                <p class="text-2xl font-bold text-slate-700">{{ $stats['total'] }}</p>
+            <div class="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-5 flex gap-4">
+                <div class="w-1 shrink-0 rounded-full bg-[#004b87]"></div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-lg">📦</span>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total SKU Items</h3>
+                    </div>
+                    <p class="font-['Manrope',sans-serif] text-3xl font-bold text-[#003461]">{{ $stats['total'] }}</p>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ count($categories) }} categor{{ count($categories) === 1 ? 'y' : 'ies' }}</p>
+                </div>
             </div>
-            <div class="bg-white rounded-lg shadow p-4 border-t-4 border-red-500">
-                <h3 class="text-xs font-semibold text-gray-500 uppercase">Items to Indent</h3>
-                <p class="text-2xl font-bold text-red-600">{{ $stats['needs_order'] }}</p>
+            <div class="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-5 flex gap-4">
+                <div class="w-1 shrink-0 rounded-full bg-[#6e0004]"></div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-lg">⚠️</span>
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Items to Indent</h3>
+                    </div>
+                    <p class="font-['Manrope',sans-serif] text-3xl font-bold text-[#6e0004]">{{ $stats['needs_order'] }}</p>
+                    <p class="text-xs text-[#990007] mt-0.5 font-medium">{{ $stats['needs_order'] > 0 ? 'Order required' : 'All stocked up' }}</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Garis Panduan Indent --}}
+        <div x-show="showGuidelines" x-cloak class="mb-4 bg-blue-50 border border-blue-200 rounded-lg px-5 py-3 text-sm text-blue-900">
+            <div class="flex gap-3">
+                <span class="text-blue-600 text-lg leading-none mt-0.5 shrink-0">📋</span>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2 mb-1.5">
+                        <p class="font-semibold text-xs uppercase tracking-wider">Garis Panduan Indent Produk Wound Care</p>
+                        <button @click="dismissGuidelines()" class="text-blue-400 hover:text-blue-600 text-lg leading-none">&times;</button>
+                    </div>
+                    <ul class="text-xs text-blue-800 space-y-1 list-disc list-inside">
+                        <li>Proses indent produk wound care akan dibuat setiap hujung bulan sebelum 5 haribulan bulan berikutnya.</li>
+                        <li>Pesanan bagi produk yang dibungkus mengikut kotak (contoh: 12 unit/box) mestilah dibuat mengikut kuantiti kotak. Pembelian secara unit (single) tidak dibenarkan.</li>
+                        <li>Pengiraan stok semasa serta perbincangan bersama MO perlu dilakukan terlebih dahulu sebelum sebarang pesanan baharu dibuat.</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -57,6 +98,7 @@
         <div class="flex flex-col sm:flex-row gap-3 mb-4 items-start sm:items-center justify-between">
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <form method="GET" action="{{ route('dashboard') }}" class="flex gap-2">
+                    <input type="hidden" name="month" value="{{ $monthOffset }}">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." class="border rounded px-3 py-2 text-sm w-64">
                     <select name="filter" onchange="this.form.submit()" class="border rounded px-3 py-2 text-sm">
                         <option value="all" {{ request('filter') === 'all' || !request('filter') ? 'selected' : '' }}>All Categories</option>
@@ -67,9 +109,14 @@
                         @endforeach
                     </select>
                     @if(request('search') || request('filter'))
-                        <a href="{{ route('dashboard') }}" class="text-sm text-gray-500 hover:text-gray-700 underline self-center">Clear</a>
+                        <a href="{{ route('dashboard', ['month' => $monthOffset]) }}" class="text-sm text-gray-500 hover:text-gray-700 underline self-center">Clear</a>
                     @endif
                 </form>
+                <template x-if="!showGuidelines">
+                    <button @click="showGuidelines = true; localStorage.removeItem('wcim_hide_guidelines')" class="text-xs text-blue-600 hover:text-blue-800 underline whitespace-nowrap">
+                        📋 Tunjuk Garis Panduan
+                    </button>
+                </template>
             </div>
             <div class="flex gap-2">
                 @if($currentMonthIndent)
@@ -404,6 +451,13 @@ function inventoryApp() {
         showEditModal: false,
         editProduct: {},
         editFormAction: '',
+        selectedMonth: {{ $monthOffset }},
+        showGuidelines: localStorage.getItem('wcim_hide_guidelines') !== 'true',
+
+        dismissGuidelines() {
+            this.showGuidelines = false;
+            localStorage.setItem('wcim_hide_guidelines', 'true');
+        },
 
         setGlobalMode(mode) {
             fetch('/products/batch-input-mode', {
@@ -496,7 +550,7 @@ function inventoryApp() {
         },
 
         generatePdf() {
-            fetch('/indent/save-and-download', {
+            fetch(`/indent/save-and-download?month=${this.selectedMonth}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',

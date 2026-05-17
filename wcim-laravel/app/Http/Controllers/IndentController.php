@@ -26,14 +26,17 @@ class IndentController extends Controller
         ]);
     }
 
-    public function saveAndDownload()
+    public function saveAndDownload(Request $request)
     {
+        $monthOffset = (int) $request->input('month', 0);
+        $targetDate = now()->subMonths($monthOffset);
+
         $items = Product::whereColumn('requirement', '>', 'stock')
             ->orderBy('product')
             ->get();
 
         $indent = Indent::create([
-            'indent_date' => now(),
+            'indent_date' => $targetDate,
             'total_items' => $items->count(),
         ]);
 
@@ -50,13 +53,13 @@ class IndentController extends Controller
         if (!File::exists($backupDir)) {
             File::makeDirectory($backupDir, 0755, true);
         }
-        File::copy(database_path('database.sqlite'), $backupDir . '/auto-backup-' . now()->format('Y-m') . '.sqlite');
+        File::copy(database_path('database.sqlite'), $backupDir . '/auto-backup-' . $targetDate->format('Y-m') . '.sqlite');
 
         $pdf = Pdf::loadView('reports.pdf', [
             'items' => $items,
             'generated_at' => now()->format('Y-m-d H:i:s'),
         ]);
 
-        return $pdf->download('wound-care-order-' . now()->format('Y-m-d') . '.pdf');
+        return $pdf->download('wound-care-order-' . $targetDate->format('Y-m-d') . '.pdf');
     }
 }

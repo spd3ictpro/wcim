@@ -23,35 +23,41 @@ class StockController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|numeric|min:1',
-            'input_mode' => 'required|in:unit,box',
-            'notes' => 'nullable|string|max:500',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.input_mode' => 'required|in:unit,box',
+            'items.*.notes' => 'nullable|string|max:500',
         ]);
 
-        $product = Product::findOrFail($validated['product_id']);
-        $perBox = $product->per_box;
-        $qty = (int) $validated['quantity'];
+        $count = 0;
+        foreach ($validated['items'] as $item) {
+            $product = Product::findOrFail($item['product_id']);
+            $perBox = $product->per_box;
+            $qty = (int) $item['quantity'];
 
-        if ($validated['input_mode'] === 'box' && $perBox) {
-            $units = $qty * $perBox;
-        } else {
-            $units = $qty;
+            if ($item['input_mode'] === 'box' && $perBox) {
+                $units = $qty * $perBox;
+            } else {
+                $units = $qty;
+            }
+
+            $oldStock = $product->stock;
+            $product->stock += $units;
+            $product->save();
+
+            UsageLog::create([
+                'product_id' => $product->id,
+                'old_stock' => $oldStock,
+                'new_stock' => $product->stock,
+                'change' => $units,
+                'note' => $item['notes'] ?? '',
+                'type' => 'received',
+            ]);
+
+            $count++;
         }
 
-        $oldStock = $product->stock;
-        $product->stock += $units;
-        $product->save();
-
-        UsageLog::create([
-            'product_id' => $product->id,
-            'old_stock' => $oldStock,
-            'new_stock' => $product->stock,
-            'change' => $units,
-            'note' => $validated['notes'] ?? '',
-            'type' => 'received',
-        ]);
-
-        return redirect()->route('stock.receive')->with('success', "Received {$qty} {$validated['input_mode']}(s) of {$product->product}.");
+        return redirect()->route('stock.receive')->with('success', "Successfully received {$count} item(s).");
     }
 }

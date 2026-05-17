@@ -22,10 +22,14 @@
     <aside class="w-56 bg-white border-r border-blue-100 flex-shrink-0 flex flex-col">
         {{-- Logo Area --}}
         <div class="px-4 py-4 border-b border-blue-100">
-            <div class="flex items-center gap-2.5">
-                <img src="{{ asset('images/logo kkm.jpg') }}" alt="KKM" class="h-9 w-auto">
-                <div class="w-px h-7 bg-blue-200"></div>
-                <img src="{{ asset('images/kkjp logo.png') }}" alt="KKJP" class="h-9 w-auto">
+            <div class="flex items-center gap-3 w-full">
+                <div class="flex-1 flex justify-center">
+                    <img src="{{ asset('images/logo kkm.jpg') }}" alt="KKM" class="max-h-24 w-auto object-contain">
+                </div>
+                <div class="w-px h-16 bg-blue-200 shrink-0"></div>
+                <div class="flex-1 flex justify-center">
+                    <img src="{{ asset('images/kkjp logo.png') }}" alt="KKJP" class="max-h-24 w-auto object-contain">
+                </div>
             </div>
             <div class="mt-2 pl-1">
                 <span class="font-['Manrope',sans-serif] text-base font-extrabold text-[#004b87]">WCIM</span>
