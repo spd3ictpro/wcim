@@ -33,11 +33,14 @@ jobs:
       - name: Create .env file
         run: copy .env.example .env
 
-      - name: Generate app key
-        run: php artisan key:generate
+      - name: Create SQLite database
+        run: type nul > database/database.sqlite
 
       - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader
+
+      - name: Generate app key
+        run: php artisan key:generate --force
 
       - name: Install npm dependencies
         run: npm ci
