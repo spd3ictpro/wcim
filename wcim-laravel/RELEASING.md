@@ -9,10 +9,10 @@
 
 1. **Update version**
 
-   Edit `.env` and bump `NATIVEPHP_APP_VERSION`:
+   Edit `.env` and `.env.example`, bump `NATIVEPHP_APP_VERSION`:
 
    ```bash
-   NATIVEPHP_APP_VERSION=1.1.0
+   NATIVEPHP_APP_VERSION=1.1.2
    ```
 
 2. **Update CHANGELOG.md** with the new version and changes.
