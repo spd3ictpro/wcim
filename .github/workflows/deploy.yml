@@ -55,11 +55,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wcim-installer
-          path: dist/*.exe
+          path: wcim-laravel/nativephp/electron/dist/*.exe
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           draft: true
           generate_release_notes: true
-          files: dist/*.exe
+          files: wcim-laravel/nativephp/electron/dist/*.exe
