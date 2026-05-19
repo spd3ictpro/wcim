@@ -1,4 +1,4 @@
-# WCIM Release Notes
+# Changelog
 
 ## [v1.1.2](https://github.com/spd3ictpro/wcim/compare/v1.1.1...v1.1.2) - 2026-05-18
 
